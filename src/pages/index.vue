@@ -18,6 +18,7 @@ const dataLoaded = ref(false);
 const points = ref([]);
 //"SP-36", "NPK", "ZA", "Petroganik", "Urea"
 const selectedType = ref("SP-36");
+const selectedMenu = ref(0);
 const listType = [
   {
     name: "SP-36",
@@ -216,7 +217,7 @@ function kedekatan(O5, P5, Q5) {
       </div>
     </div>
     <div v-if="dataLoaded">
-      <div>
+      <div class="grid lg:grid-cols-2 gap-2 justify-between">
         <div class="space-x-4 mb-4">
           <Button
             v-for="item in listByType"
@@ -226,6 +227,20 @@ function kedekatan(O5, P5, Q5) {
           >
             {{ item?.type?.name }}
           </Button>
+        </div>
+        <div class="space-x-4">
+          <Button
+            @click="selectedMenu = 0"
+            :variant="selectedMenu == 0 ? '' : 'outline'"
+            size="sm"
+            >K-Medoids</Button
+          >
+          <Button
+            @click="selectedMenu = 1"
+            :variant="selectedMenu == 1 ? '' : 'outline'"
+            size="sm"
+            >Shilouette</Button
+          >
         </div>
       </div>
       <div class="flex space-x-8 mb-6">
@@ -255,13 +270,13 @@ function kedekatan(O5, P5, Q5) {
               <th>Alokasi</th>
               <th>Realisasi</th>
               <th>Sisa/Kurang</th>
-              <!-- <th>C1</th>
-              <th>C2</th>
-              <th>C3</th> -->
-              <th>Kedekatan</th>
-              <th>a(i)</th>
-              <th>b(i)</th>
-              <th>Koefisien</th>
+              <th v-if="selectedMenu == 0">C1</th>
+              <th v-if="selectedMenu == 0">C2</th>
+              <th v-if="selectedMenu == 0">C3</th>
+              <th v-if="selectedMenu == 0">Kedekatan</th>
+              <th v-if="selectedMenu == 1">a(i)</th>
+              <th v-if="selectedMenu == 1">b(i)</th>
+              <th v-if="selectedMenu == 1">Koefisien</th>
               <th>Hasil</th>
             </TableRow>
           </TableHeader>
@@ -279,13 +294,13 @@ function kedekatan(O5, P5, Q5) {
               <TableCell>{{ point.x }}</TableCell>
               <TableCell>{{ point.y }}</TableCell>
               <TableCell>{{ point.z }}</TableCell>
-              <!-- <TableCell>{{ c1(point) }}</TableCell>
-              <TableCell>{{ c2(point) }}</TableCell>
-              <TableCell>{{ c3(point) }}</TableCell> -->
-              <TableCell>{{
+              <TableCell v-if="selectedMenu == 0">{{ c1(point) }}</TableCell>
+              <TableCell v-if="selectedMenu == 0">{{ c2(point) }}</TableCell>
+              <TableCell v-if="selectedMenu == 0">{{ c3(point) }}</TableCell>
+              <TableCell v-if="selectedMenu == 0">{{
                 kedekatan(c1(point), c2(point), c3(point))?.tmp
               }}</TableCell>
-              <TableCell>
+              <TableCell v-if="selectedMenu == 1">
                 {{
                   calculateDistanceSum(
                     point.x,
@@ -299,7 +314,7 @@ function kedekatan(O5, P5, Q5) {
                   )
                 }}
               </TableCell>
-              <TableCell>
+              <TableCell v-if="selectedMenu == 1">
                 {{
                   calculateDistance(
                     point,
@@ -311,7 +326,7 @@ function kedekatan(O5, P5, Q5) {
                   )?.[0]
                 }}
               </TableCell>
-              <TableCell>
+              <TableCell v-if="selectedMenu == 1">
                 {{
                   1 /
                   (calculateDistanceSum(
